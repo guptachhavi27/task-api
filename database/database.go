@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	postgresdb "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file" // Required for file-based migrations
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -38,15 +38,14 @@ func ConnectDatabase() {
 }
 
 func runMigrations( sqlDB *sql.DB) {
-	// Create the migration driver for Postgres
 	driver, err := postgresdb.WithInstance(sqlDB, &postgresdb.Config{})
 	if err != nil {
 		log.Fatal("Failed to create migration driver:", err)
 	}
 	
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://migrations", // Path to the migrations folder
-		"postgres",          // Database type
+		"file://migrations", 
+		"postgres",         
 		driver,
 	)
 	if err != nil {

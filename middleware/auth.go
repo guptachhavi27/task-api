@@ -21,11 +21,9 @@ func Authenticate() gin.HandlerFunc {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Ensure the token method is HMAC (symmetric encryption)
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		// Return the secret key to validate the signature
 		return []byte(secretKey), nil
 	})
 		if err != nil || !isTokenValid(token)  {
