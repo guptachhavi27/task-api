@@ -56,3 +56,10 @@ These routes require a valid **JWT token** for access.
 ## Testing the application
     - The postman collection to test this application can be found at
     `https://www.postman.com/guptachhavi27/task-api/collection/wo8ups7/task-management-api?share=true`
+
+## Pagination
+- The public GET /public/tasks endpoint supports pagination using the following query parameters:
+    page: Page number (default: 1).
+    page_size: Number of tasks per page (default: 10).
+- Example Request:
+ `GET /public/tasks?page=2&page_size=5`
