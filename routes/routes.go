@@ -10,11 +10,9 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Public routes
 	public := r.Group("/public")
 	public.GET("/tasks", controllers.GetAllTasks)
 
-	// Protected routes
 	protected := r.Group("/tasks")
 	protected.Use(middleware.Authenticate())
 	protected.GET("/:id", controllers.GetTaskByID)

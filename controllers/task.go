@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"task-api/database"
 	"task-api/models"
 
@@ -9,9 +10,40 @@ import (
 )
 
 func GetAllTasks(c *gin.Context) {
+	// var tasks []models.Task
+	// database.DB.Find(&tasks)
+	// c.JSON(http.StatusOK, tasks)
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1")) // Default to page 1
+	if err != nil || page < 1 {
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10")) // Default to 10 items per page
+	if err != nil || pageSize < 1 {
+		pageSize = 10
+	}
+
 	var tasks []models.Task
-	database.DB.Find(&tasks)
-	c.JSON(http.StatusOK, tasks)
+	offset := (page - 1) * pageSize
+
+	// Query the database with pagination
+	result := database.DB.Limit(pageSize).Offset(offset).Find(&tasks)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
+		return
+	}
+
+	// Get the total count of tasks for pagination metadata
+	var total int64
+	database.DB.Model(&models.Task{}).Count(&total)
+
+	// Return paginated response
+	c.JSON(http.StatusOK, gin.H{
+		"tasks":       tasks,
+		"total":       total,
+		"page":        page,
+		"page_size":   pageSize,
+		"total_pages": (total + int64(pageSize) - 1) / int64(pageSize), // Calculate total pages
+	})
 }
 
 func GetTaskByID(c *gin.Context) {
