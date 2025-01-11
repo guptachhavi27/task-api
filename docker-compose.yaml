@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${username}
+      POSTGRES_PASSWORD: ${password}
+      POSTGRES_DB: task_db
+  migrate:
+    image: migrate/migrate
+    command: ["-path", "/migrations", "-database", "${db_url}", "up"]
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      - db
